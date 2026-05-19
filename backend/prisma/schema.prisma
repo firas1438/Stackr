@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id           String       @id @default(cuid())
+  slug         String       @unique
+  name         String
+  subtitle     String?
+  sort         Int          @default(0) @map("sort_order")
+  active       Boolean      @default(true) @map("is_active")
+  technologies Technology[]
+
+  @@map("category")
+}
+
+model Technology {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  name       String
+  blurb      String?
+  url        String?
+  domain     String?
+  sort       Int      @default(0) @map("sort_order")
+  active     Boolean  @default(true) @map("is_active")
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("technology")
+}
+
+model Stack {
+  id            String   @id @default(cuid())
+  idea          String
+  selections    Json
+  title         String
+  summary       String   @db.Text
+  explanation   String   @db.Text
+  diagram       String   @db.Text
+  alternatives  Json?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@map("stack")
+}
