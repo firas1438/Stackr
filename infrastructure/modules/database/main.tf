@@ -1,10 +1,10 @@
 # DB Subnet Group
 resource "aws_db_subnet_group" "main" {
-  name       = "$${var.project_name}-db-subnet-group"
+  name       = "${var.project_name}-db-subnet-group"
   subnet_ids = var.private_subnet_ids
 
   tags = {
-    Name = "$${var.project_name}-db-subnet-group"
+    Name = "${var.project_name}-db-subnet-group"
   }
 }
 
@@ -24,6 +24,6 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible    = false
 
   tags = {
-    Name = "$${var.project_name}-rds-postgres"
+    Name = "${var.project_name}-rds-postgres"
   }
 }

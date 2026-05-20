@@ -1,6 +1,6 @@
 # ALB Security Group
 resource "aws_security_group" "alb_sg" {
-  name        = "$${var.project_name}-alb-sg"
+  name        = "${var.project_name}-alb-sg"
   description = "Allow HTTP from internet"
   vpc_id      = var.vpc_id
 
@@ -19,13 +19,13 @@ resource "aws_security_group" "alb_sg" {
   }
 
   tags = {
-    Name = "$${var.project_name}-alb-sg"
+    Name = "${var.project_name}-alb-sg"
   }
 }
 
 # Backend EC2 Security Group
 resource "aws_security_group" "backend_sg" {
-  name        = "$${var.project_name}-backend-sg"
+  name        = "${var.project_name}-backend-sg"
   description = "Allow traffic from ALB"
   vpc_id      = var.vpc_id
 
@@ -44,13 +44,13 @@ resource "aws_security_group" "backend_sg" {
   }
 
   tags = {
-    Name = "$${var.project_name}-backend-sg"
+    Name = "${var.project_name}-backend-sg"
   }
 }
 
 # RDS Security Group
 resource "aws_security_group" "rds_sg" {
-  name        = "$${var.project_name}-rds-sg"
+  name        = "${var.project_name}-rds-sg"
   description = "Allow traffic from Backend EC2"
   vpc_id      = var.vpc_id
 
@@ -69,13 +69,13 @@ resource "aws_security_group" "rds_sg" {
   }
 
   tags = {
-    Name = "$${var.project_name}-rds-sg"
+    Name = "${var.project_name}-rds-sg"
   }
 }
 
 # Frontend EC2 Security Group
 resource "aws_security_group" "frontend_sg" {
-  name        = "$${var.project_name}-frontend-sg"
+  name        = "${var.project_name}-frontend-sg"
   description = "Allow HTTP and SSH"
   vpc_id      = var.vpc_id
 
@@ -101,6 +101,6 @@ resource "aws_security_group" "frontend_sg" {
   }
 
   tags = {
-    Name = "$${var.project_name}-frontend-sg"
+    Name = "${var.project_name}-frontend-sg"
   }
 }

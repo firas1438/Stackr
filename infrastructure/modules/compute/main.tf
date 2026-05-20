@@ -1,19 +1,19 @@
 # Application Load Balancer
 resource "aws_lb" "backend_alb" {
-  name               = "$${var.project_name}-alb"
+  name               = "${var.project_name}-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.alb_sg_id]
   subnets            = var.public_subnet_ids
 
   tags = {
-    Name = "$${var.project_name}-alb"
+    Name = "${var.project_name}-alb"
   }
 }
 
 # Target Group
 resource "aws_lb_target_group" "backend_tg" {
-  name     = "$${var.project_name}-backend-tg"
+  name     = "${var.project_name}-backend-tg"
   port     = 3000
   protocol = "HTTP"
   vpc_id   = var.vpc_id
@@ -53,7 +53,7 @@ data "aws_ami" "ubuntu" {
 
 # Backend Launch Template
 resource "aws_launch_template" "backend_lt" {
-  name_prefix   = "$${var.project_name}-backend-"
+  name_prefix   = "${var.project_name}-backend-"
   image_id      = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
 
@@ -70,9 +70,9 @@ resource "aws_launch_template" "backend_lt" {
 
               # Clone and configure environment variables
               cd /home/ubuntu
-              git clone $${var.github_repo} app
+              git clone ${var.github_repo} app
               cd app/backend
-              echo "DATABASE_URL=postgresql://$${var.db_username}:$${var.db_password}@$${var.db_address}:5432/$${var.db_name}" >> .env
+              echo "DATABASE_URL=postgresql://${var.db_username}:${var.db_password}@${var.db_address}:5432/${var.db_name}" >> .env
               echo "PORT=3000" >> .env
 
               # Build app
@@ -88,14 +88,14 @@ resource "aws_launch_template" "backend_lt" {
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = "$${var.project_name}-backend-instance"
+      Name = "${var.project_name}-backend-instance"
     }
   }
 }
 
 # Backend Auto Scaling Group
 resource "aws_autoscaling_group" "backend_asg" {
-  name                = "$${var.project_name}-backend-asg"
+  name                = "${var.project_name}-backend-asg"
   vpc_zone_identifier = var.private_subnet_ids
   target_group_arns   = [aws_lb_target_group.backend_tg.arn]
   health_check_type   = "ELB"
@@ -110,14 +110,14 @@ resource "aws_autoscaling_group" "backend_asg" {
 
   tag {
     key                 = "Name"
-    value               = "$${var.project_name}-backend-asg"
+    value               = "${var.project_name}-backend-asg"
     propagate_at_launch = true
   }
 }
 
 # Scaling Policy
 resource "aws_autoscaling_policy" "cpu_scaling" {
-  name                   = "$${var.project_name}-cpu-scaling"
+  name                   = "${var.project_name}-cpu-scaling"
   autoscaling_group_name = aws_autoscaling_group.backend_asg.name
   policy_type            = "TargetTrackingScaling"
 
@@ -149,9 +149,9 @@ resource "aws_instance" "frontend" {
 
               # Clone and configure
               cd /home/ubuntu
-              git clone $${var.github_repo} app
+              git clone ${var.github_repo} app
               cd app/frontend
-              echo "VITE_API_URL=http://$${aws_lb.backend_alb.dns_name}/api/v1" >> .env
+              echo "VITE_API_URL=http://${aws_lb.backend_alb.dns_name}/api/v1" >> .env
 
               # Build app
               npm install
@@ -182,6 +182,6 @@ resource "aws_instance" "frontend" {
               EOF
 
   tags = {
-    Name = "$${var.project_name}-frontend"
+    Name = "${var.project_name}-frontend"
   }
 }
