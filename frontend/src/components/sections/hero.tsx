@@ -13,7 +13,7 @@ export function HeroSection() {
   const doubled = [...techPills, ...techPills]
 
   return (
-    <section className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center text-center px-6 sm:px-14 py-14 sm:py-24 overflow-hidden">
+    <section className="relative min-h-[calc(90vh-3.5rem)] flex flex-col items-center justify-center text-center px-6 sm:px-14 py-16 sm:py-24 overflow-hidden">
       <BackgroundPattern />
 
       {/* Badge */}

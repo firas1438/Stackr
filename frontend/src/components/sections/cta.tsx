@@ -20,14 +20,14 @@ export function CtaSection() {
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-muted leading-tight max-w-4xl">
                 Ready to design your perfect stack?
               </h2>
-              <p className="mt-4 font-bold sm:text-lg font-light text-muted/95 max-w-md">
+              <p className="mt-4 font-semilight sm:text-lg text-muted/95 max-w-md">
                 No signup required. Get a complete architecture blueprint in seconds.
               </p>
             </div>
 
             {/* Right */}
             <div className="shrink-0 w-full sm:w-auto">
-              <Button asChild size="lg" className="bg-muted hover:bg-muted/90 font-semibold gap-2 text-primary-foreground w-full sm:w-auto justify-center" >
+              <Button asChild size="lg" className="bg-muted font-light hover:bg-muted/90 gap-2 text-primary-foreground w-full sm:w-auto justify-center" >
                 <Link to="/build">
                   Start building
                   <ArrowRight size={16} />

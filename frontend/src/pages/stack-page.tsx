@@ -10,11 +10,7 @@ import { getStack } from '@/lib/api'
 
 export function StackPage() {
   const { id } = useParams<{ id: string }>()
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['stack', id],
-    queryFn: () => getStack(id!),
-    enabled: !!id,
-  })
+  const { data, isLoading, isError } = useQuery({ queryKey: ['stack', id], queryFn: () => getStack(id!), enabled: !!id, })
 
   if (isLoading) {
     return (
@@ -42,19 +38,23 @@ export function StackPage() {
 
   return (
     <PageContainer>
-      <Button asChild variant="ghost" size="sm" className="mb-6 -ml-2">
-        <Link to="/build">
+
+      {/* back button */}
+      <Button asChild variant="outline" className="mb-6 -ml-2">
+        <Link to="/history">
           <ArrowLeft size={16} />
-          Build another
+          Back to History
         </Link>
       </Button>
 
+      {/* header */}
       <header className="mb-8">
         <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{data.idea}</p>
         <h1 className="text-3xl font-extrabold tracking-tight">{data.title}</h1>
         <p className="mt-3 text-muted-foreground">{data.summary}</p>
       </header>
 
+      {/* architecture diagram */}
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Architecture diagram</CardTitle>
@@ -65,15 +65,17 @@ export function StackPage() {
         </CardContent>
       </Card>
 
+      {/* explanation */}
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Explanation</CardTitle>
         </CardHeader>
-        <CardContent className="prose prose-invert prose-sm max-w-none prose-headings:font-semibold prose-p:text-muted-foreground">
+        <CardContent className="prose prose-invert prose-sm max-w-none prose-headings:font-semibold prose-p:text-muted-foreground text-muted-foreground text-sm">
           <ReactMarkdown>{data.explanation}</ReactMarkdown>
         </CardContent>
       </Card>
 
+      {/* alternative stack */}
       {data.alternatives && data.alternatives.length > 0 && (
         <Card>
           <CardHeader>
@@ -81,14 +83,17 @@ export function StackPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {data.alternatives.map((alt) => (
-              <div key={alt.name} className="rounded-lg border border-[var(--border)] p-4">
-                <h3 className="font-semibold">{alt.name}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{alt.rationale}</p>
+              <div className='space-y-4'>
+                <div key={alt.name}>
+                  <h3 className="font-semibold text-sm text-muted-foreground">- {alt.name}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{alt.rationale}</p>
+                </div>
               </div>
             ))}
           </CardContent>
         </Card>
       )}
+
     </PageContainer>
   )
 }

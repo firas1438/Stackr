@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 const nav = [
     { to: '/build', label: 'Build', icon: Layers },
     { to: '/history', label: 'History', icon: History },
-    { to: 'https://github.com/firas1438/Stackr', label: 'Repo', icon: Github, className: 'hidden sm:flex' },
+    { to: 'https://github.com/firas1438/Stackr', label: 'Repo', icon: Github, className: 'hidden sm:flex', target: '_blank', rel: 'noopener noreferrer' },
 ]
 
 export function Navbar() {
@@ -17,8 +17,8 @@ export function Navbar() {
                     Stackr
                 </Link>
                 <nav className="flex items-center gap-0 sm:gap-1">
-                    {nav.map(({ to, label, icon: Icon, className }) => (
-                        <NavLink key={to} to={to}
+                    {nav.map(({ to, label, icon: Icon, className, target, rel }) => (
+                       <NavLink key={to} to={to} target={target} rel={rel}
                             className={({ isActive }) =>
                                 cn('flex items-center gap-2 rounded-lg px-2.5 sm:px-3 py-2 text-sm font-medium transition-colors',
                                     isActive ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground',

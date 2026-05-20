@@ -36,6 +36,7 @@ export interface StackListItem {
   idea: string
   title: string
   summary: string
+  selections: Record<string, string>
   createdAt: string
 }
 

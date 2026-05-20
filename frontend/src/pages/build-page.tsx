@@ -7,6 +7,7 @@ import { PageContainer } from '@/components/page-container'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { createStack, getCatalog } from '@/lib/api'
+import { Layers } from 'lucide-react'
 
 export function BuildPage() {
   const navigate = useNavigate()
@@ -38,15 +39,19 @@ export function BuildPage() {
     <>
       {/* main content */}
       <PageContainer>
+
         {/* header */}
-        <header className="mb-12 border-l-4 border-primary pl-4 rounded-md">
-          <h1 className="text-3xl font-bold tracking-tight">Build your stack</h1>
-          <p className="mt-2 text-muted-foreground">Describe your project and pick technologies. Stackr will explain how everything connects.</p>
+        <header className="mb-8">
+          <div className="flex items-center gap-2.5">
+            <Layers size={22} className="text-primary" />
+            <h1 className="text-2xl font-semibold tracking-tight text-primary">Build your stack</h1>
+          </div>
+          <p className="mt-1.5 text-sm text-muted-foreground">Describe your project and pick technologies. Stackr will explain how everything connects.</p>
         </header>
 
         {/* textarea */}
-        <div className="mb-8">
-          <label className="text-sm font-medium mb-2 block">Project idea</label>
+        <div className="mb-6">
+          <label className="text-sm font-medium mb-2.5 block">Project idea</label>
           <Textarea
             placeholder="e.g. A real-time chat app for small teams"
             value={idea}
@@ -64,25 +69,26 @@ export function BuildPage() {
         {catalog.isError && (
           <p className="text-center text-red-400 py-12">Could not load catalog. Is the API running?</p>
         )}
-
         {catalog.data && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {catalog.data.categories.map((cat) => (
-              <LayerCard
-                key={cat.id}
-                category={cat}
-                selectedId={selections[cat.id] ?? null}
-                onToggle={toggle}
-              />
-            ))}
+          <div>
+            <label className="text-sm font-medium mb-2.5 block">Technology stack</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {catalog.data.categories.map((cat) => (
+                <LayerCard
+                  key={cat.id}
+                  category={cat}
+                  selectedId={selections[cat.id] ?? null}
+                  onToggle={toggle}
+                />
+              ))}
+            </div>
           </div>
         )}
 
-        {catalog.data && <div aria-hidden className="min-h-30 sm:min-h-16" />}
       </PageContainer>
 
       {/* footer */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-background/90 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/90 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex h-auto max-w-7xl flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row">
           <p className="text-sm text-muted-foreground">
             {pickedCount === 0
@@ -95,7 +101,7 @@ export function BuildPage() {
             onClick={() => { setError(null); generate.mutate() }}
           >
             {generate.isPending ? (
-              <span className='text-sm flex items-center gap-2'>
+              <span className='text-sm text-muted flex items-center gap-2'>
                 <Loader2 className="animate-spin" size={18} />
                 Generating…
               </span>
