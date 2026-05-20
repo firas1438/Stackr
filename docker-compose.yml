@@ -10,5 +10,27 @@ services:
     volumes:
       - stackr_pg:/var/lib/postgresql/data
 
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/stackr
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000/api/v1}
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
 volumes:
   stackr_pg:

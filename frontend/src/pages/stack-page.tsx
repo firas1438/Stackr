@@ -49,7 +49,7 @@ export function StackPage() {
 
       {/* header */}
       <header className="mb-8">
-        <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{data.idea}</p>
+        <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{`{ ${data.idea} }`}</p>
         <h1 className="text-3xl font-extrabold tracking-tight">{data.title}</h1>
         <p className="mt-3 text-muted-foreground">{data.summary}</p>
       </header>
@@ -86,7 +86,7 @@ export function StackPage() {
               <div className='space-y-4'>
                 <div key={alt.name}>
                   <h3 className="font-semibold text-sm text-muted-foreground">- {alt.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{alt.rationale}</p>
+                  <p className="text-sm text-muted-foreground ">{alt.rationale}</p>
                 </div>
               </div>
             ))}

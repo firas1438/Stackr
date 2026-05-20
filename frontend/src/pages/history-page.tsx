@@ -5,15 +5,7 @@ import { Link } from 'react-router-dom'
 import { PageContainer } from '@/components/page-container'
 import { ItemLogo } from '@/components/item-logo'
 import { listStacks, getCatalog, CatalogItem } from '@/lib/api'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, } from '@/components/ui/pagination'
 import { History } from 'lucide-react'
 
 export function HistoryPage() {
@@ -29,7 +21,6 @@ export function HistoryPage() {
   const totalPages = data ? Math.ceil(data.total / limit) : 0
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
   const getPageNumbers = () => {
     const pages: (number | 'ellipsis')[] = []

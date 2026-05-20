@@ -43,10 +43,10 @@ npm install
 
 ### 3. Environment
 
-Copy `backend/.env.example` to `backend/.env` and add your Gemini key:
+Copy `.env.example` to `.env` and add your Gemini key:
 
 ```bash
-cp backend/.env.example backend/.env
+cp .env.example .env
 ```
 
 ```env
