@@ -53,7 +53,7 @@ data "aws_ami" "ubuntu" {
 
 # Backend Launch Template
 resource "aws_launch_template" "backend_lt" {
-  name_prefix   = "${var.project_name}-backend-"
+  name_prefix   = "${var.project_name}-backend"
   image_id      = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
 
@@ -68,20 +68,49 @@ resource "aws_launch_template" "backend_lt" {
               curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
               apt install -y nodejs git
 
-              # Clone and configure environment variables
+              # Clone repository
               cd /home/ubuntu
               git clone ${var.github_repo} app
               cd app/backend
-              echo "DATABASE_URL=postgresql://${var.db_username}:${var.db_password}@${var.db_address}:5432/${var.db_name}" >> .env
-              echo "PORT=3000" >> .env
 
-              # Build app
+              # Configure environment variables
+              echo "PORT=3000" >> .env
+              echo "DATABASE_URL=postgresql://${var.db_username}:${var.db_password}@${var.db_address}:5432/${var.db_name}" >> .env
+              echo "CORS_ORIGIN=*" >> .env
+              echo "GEMINI_API_KEY=${var.gemini_api_key}" >> .env
+
+              # Install, migrate and build
               npm install
+              npx prisma migrate deploy
               npm run prisma:generate
               npm run build
 
-              # Start app
-              node dist/src/main.js &
+              # Fix permissions
+              chown -R ubuntu:ubuntu /home/ubuntu/app
+
+              # Configure systemd service
+              cat <<EOS > /etc/systemd/system/backend.service
+              [Unit]
+              Description=Stackr NestJS Backend
+              After=network.target
+
+              [Service]
+              Type=simple
+              User=ubuntu
+              WorkingDirectory=/home/ubuntu/app/backend
+              ExecStart=/usr/bin/node dist/main.js
+              Restart=always
+              RestartSec=5
+              Environment=NODE_ENV=production
+
+              [Install]
+              WantedBy=multi-user.target
+              EOS
+
+              # Enable and start service
+              systemctl daemon-reload
+              systemctl enable backend
+              systemctl start backend
               EOF
   )
 
@@ -154,6 +183,8 @@ resource "aws_instance" "frontend" {
               echo "VITE_API_URL=http://${aws_lb.backend_alb.dns_name}/api/v1" >> .env
 
               # Build app
+              rm -f package-lock.json
+              rm -rf node_modules
               npm install
               npm run build
 

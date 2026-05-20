@@ -37,38 +37,66 @@ stackr/
 
 ### 2. Install dependencies
 
+Install dependencies for both projects:
+
 ```bash
+# Install backend dependencies
+cd backend
+npm install
+
+# Install frontend dependencies
+cd ../frontend
 npm install
 ```
 
 ### 3. Environment
 
-Copy `.env.example` to `.env` and add your Gemini key:
+Configure environment variables for both:
 
+**Backend:**
+Copy `backend/.env.example` to `backend/.env` and add your database config & Gemini key:
 ```bash
+cd backend
 cp .env.example .env
 ```
 
-```env
-GEMINI_API_KEY=your_key_here
+**Frontend:**
+Copy `frontend/.env.example` to `frontend/.env`:
+```bash
+cd frontend
+cp .env.example .env
 ```
 
 ### 4. Start Postgres
 
+Run the local PostgreSQL database using docker compose:
 ```bash
 docker compose up -d
 ```
 
 ### 5. Database migrate & seed
 
+Run the database migrations and seed it from the backend folder:
 ```bash
-npm run db:migrate
-npm run db:seed
+cd backend
+npm run prisma:generate
+npm run prisma:migrate
+npm run prisma:seed
 ```
 
 ### 6. Run dev servers
 
+Run both applications:
+
+**Backend:**
 ```bash
+cd backend
+npm run dev
+```
+
+**Frontend:**
+```bash
+cd frontend
 npm run dev
 ```
 

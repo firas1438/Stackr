@@ -34,4 +34,5 @@ module "compute" {
   db_username        = var.db_username
   db_password        = var.db_password
   db_name            = var.db_name
+  gemini_api_key     = var.gemini_api_key
 }

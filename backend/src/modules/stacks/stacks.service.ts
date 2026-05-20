@@ -21,7 +21,7 @@ export class StacksService {
     private readonly catalog: CatalogService,
     private readonly gemini: GeminiService,
     private readonly config: ConfigService,
-  ) {}
+  ) { }
 
   private checkRateLimit(ip: string) {
     const max = Number(this.config.get('RATE_LIMIT_STACKS_PER_HOUR') ?? 10)

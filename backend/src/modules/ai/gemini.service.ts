@@ -12,7 +12,7 @@ export interface GenerateInput {
 
 @Injectable()
 export class GeminiService {
-  constructor(private readonly config: ConfigService) {}
+  constructor(private readonly config: ConfigService) { }
 
   async generateArchitecture(input: GenerateInput): Promise<ArchitectureOutput> {
     const apiKey = this.config.get<string>('GEMINI_API_KEY')

@@ -58,3 +58,9 @@ variable "db_name" {
   description = "Database name"
   type        = string
 }
+
+variable "gemini_api_key" {
+  description = "Gemini API key"
+  type        = string
+  sensitive   = true
+}
