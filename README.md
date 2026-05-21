@@ -67,4 +67,4 @@ terraform destroy
 
 ## Demo
 
-![Stackr Demo](https://i.imgur.com/6eonqiI.gif)
+<img width="921" height="518" alt="StackrDemo" src="https://github.com/user-attachments/assets/179469b2-c2e8-43e0-b9fe-584eece6ba2c" />
