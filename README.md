@@ -1,107 +1,58 @@
-# Stackr - AI-Powered Architecture Designer
+# Stackr
 
-**Stackr** helps developers design modern software architectures. Describe your project, pick technologies layer by layer, and get an AI-generated explanation, Mermaid diagram, and alternative stack suggestions.
+An AI-powered tool that helps developers understand how their tech stack fits together. Describe your project, select technologies layer by layer, and get a clear architecture explanation, a visual diagram, and alternative stack suggestions tailored to your use case.
 
 ## Features
 
-- **Interactive tech picker** — categories and technologies loaded from PostgreSQL
-- **AI architecture generation** — Google Gemini (`gemini-2.5-flash`)
-- **History feed** — browse recent stacks generated on the platform
-- **Dark SaaS UI** — React, Vite, Tailwind, shadcn/ui
-- **Brand logos** — theSVG → favicon proxy → initials (same strategy as stack-picker)
+- **Interactive stack picker:** categories and technologies loaded from PostgreSQL.
+- **AI architecture generation:** powered by Google Gemini (`gemini-2.5-flash`).
+- **Visual diagrams:** auto-generated Mermaid flowcharts showing how every component connects.
+- **Alternative stack suggestions:** AI recommends different approaches when a better fit exists.
+- **History feed:** browse recent architectures generated on the platform.
 
-## Tech stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | React, Vite, Tailwind, shadcn/ui, React Router, TanStack Query |
-| Backend | NestJS, Prisma |
+| Frontend | React, Vite, TanStack Query, Tailwind CSS |
+| Backend | NestJS, Prisma ORM |
 | Database | PostgreSQL |
-| AI | `@google/genai` |
+| Containerization | Docker, Docker Compose |
+| AI | Google Gemini via `@google/genai` |
+| Infrastructure | AWS (EC2, RDS, ALB, ASG) via Terraform |
 
-## Project structure
 
-```
-stackr/
-  frontend/          # React app
-  backend/           # NestJS API
-  stack-picker-example/   # reference only
-```
+## Getting Started
 
-## Getting started
+### - Local Development
 
-### 1. Prerequisites
+Run the full stack locally with Docker Compose:
 
-- Node.js 20+
-- Docker (for local Postgres)
-
-### 2. Install dependencies
-
-Install dependencies for both projects:
-
-```bash
-# Install backend dependencies
-cd backend
-npm install
-
-# Install frontend dependencies
-cd ../frontend
-npm install
-```
-
-### 3. Environment
-
-Configure environment variables for both:
-
-**Backend:**
-Copy `backend/.env.example` to `backend/.env` and add your database config & Gemini key:
-```bash
-cd backend
-cp .env.example .env
-```
-
-**Frontend:**
-Copy `frontend/.env.example` to `frontend/.env`:
-```bash
-cd frontend
-cp .env.example .env
-```
-
-### 4. Start Postgres
-
-Run the local PostgreSQL database using docker compose:
 ```bash
 docker compose up -d
 ```
 
-### 5. Database migrate & seed
+This starts the frontend, backend, and PostgreSQL database as three services. Visit http://localhost:5173.
 
-Run the database migrations and seed it from the backend folder:
+
+### - AWS Deployment (Terraform)
+
+Infrastructure is defined in the `infrastructure/` folder using Terraform.
+
 ```bash
-cd backend
-npm run prisma:generate
-npm run prisma:migrate
-npm run prisma:seed
+cd infrastructure
+
+terraform init
+terraform plan
+terraform apply
 ```
 
-### 6. Run dev servers
-
-Run both applications:
-
-**Backend:**
+To destroy the infra:
 ```bash
-cd backend
-npm run dev
+terraform destroy
 ```
 
-**Frontend:**
-```bash
-cd frontend
-npm run dev
-```
-
-- Frontend: http://localhost:5173
-- API: http://localhost:3000/api/v1
+> Make sure `infrastructure/terraform.tfvars` is filled in using `terraform.tfvars.example` as a reference before running.
 
 ## API routes
 
@@ -114,17 +65,6 @@ npm run dev
 | GET | `/stacks` | History list |
 | GET | `/stacks/:id` | Single stack detail |
 
-## Database tables
+## Demo
 
-| Table | Purpose |
-|-------|---------|
-| `category` | Stack layers (Frontend, Database, …) |
-| `technology` | Pickable tools per category |
-| `stack` | One AI result (idea, selections, outputs) |
-
-## Future roadmap
-
-- Docker production images
-- Terraform + AWS hosting
-- GitHub Actions CI/CD
-- AI-generated diagram images (Imagen)
+![Stackr Demo](https://i.imgur.com/6eonqiI.gif)
