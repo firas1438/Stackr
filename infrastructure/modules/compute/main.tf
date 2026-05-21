@@ -55,7 +55,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_launch_template" "backend_lt" {
   name_prefix   = "${var.project_name}-backend"
   image_id      = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"
+  instance_type = "t3.small"
 
   vpc_security_group_ids = [var.backend_sg_id]
 
@@ -98,7 +98,7 @@ resource "aws_launch_template" "backend_lt" {
               Type=simple
               User=ubuntu
               WorkingDirectory=/home/ubuntu/app/backend
-              ExecStart=/usr/bin/node dist/main.js
+              ExecStart=/usr/bin/node dist/src/main.js
               Restart=always
               RestartSec=5
               Environment=NODE_ENV=production
@@ -161,7 +161,7 @@ resource "aws_autoscaling_policy" "cpu_scaling" {
 # Frontend EC2 Instance
 resource "aws_instance" "frontend" {
   ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
+  instance_type               = "t3.small"
   subnet_id                   = var.public_subnet_ids[0]
   vpc_security_group_ids      = [var.frontend_sg_id]
   associate_public_ip_address = true

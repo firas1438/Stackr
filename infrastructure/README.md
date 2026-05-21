@@ -31,7 +31,7 @@ This directory contains the Terraform configuration to deploy the Stackr applica
 - **Application Load Balancer (ALB)**: Sits in the public subnets, receives all backend API requests, and distributes them evenly across the active backend servers.
 - **Target Group & Listener**: The listener waits for port 80 traffic on the ALB and routes it to the Target Group (the pool of healthy backend instances). It also actively pings `/health` to ensure the servers are alive.
 - **AMI Data Source**: Automatically fetches the latest official Ubuntu operating system image.
-- **Backend Launch Template**: The blueprint for spinning up a new backend server. It defines the OS, the server size (`t2.micro`), and runs the `user_data` script (installs Node, clones the repo, injects the dynamic Database URL, builds NestJS, and starts the server).
+- **Backend Launch Template**: The blueprint for spinning up a new backend server. It defines the OS, the server size (`t3.small`), and runs the `user_data` script (installs Node, clones the repo, injects the dynamic Database URL, builds NestJS, and starts the server).
 - **Auto Scaling Group (ASG)**: Uses the Launch Template to spin up backend servers inside the private subnets. If CPU utilization goes over 70%, it automatically creates more servers (scaling out) and registers them to the Target Group.
 - **Frontend EC2 Instance**: A standalone server in the public subnet. Its `user_data` script dynamically grabs the new ALB's DNS name, injects it into Vite as `VITE_API_URL`, builds the frontend, and serves it using Nginx with SPA routing.
 
