@@ -83,6 +83,7 @@ resource "aws_launch_template" "backend_lt" {
               npm install
               npx prisma migrate deploy
               npm run prisma:generate
+              npx prisma db seed
               npm run build
 
               # Fix permissions
