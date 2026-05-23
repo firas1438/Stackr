@@ -11,7 +11,12 @@
     gemini_api_key: ""
 
   tasks:
-    - name: Ensure Node.js and Git dependencies are installed
+    - name: Set up NodeSource repository for Node.js 20
+      shell: curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+      args:
+        executable: /bin/bash
+
+    - name: Ensure Node.js and Git are installed
       apt:
         name:
           - nodejs
@@ -39,25 +44,31 @@
         mode: '0600'
 
     - name: Install backend application dependencies
-      command: npm install
+      command: /usr/bin/npm install
       args:
         chdir: /home/ubuntu/app/backend
       become_user: ubuntu
 
     - name: Run Prisma migrations
-      command: npx prisma migrate deploy
+      command: /usr/bin/npx prisma migrate deploy
+      args:
+        chdir: /home/ubuntu/app/backend
+      become_user: ubuntu
+
+    - name: Seed the database
+      command: /usr/bin/npx prisma db seed
       args:
         chdir: /home/ubuntu/app/backend
       become_user: ubuntu
 
     - name: Generate Prisma client
-      command: npm run prisma:generate
+      command: /usr/bin/npm run prisma:generate
       args:
         chdir: /home/ubuntu/app/backend
       become_user: ubuntu
 
     - name: Build NestJS application
-      command: npm run build
+      command: /usr/bin/npm run build
       args:
         chdir: /home/ubuntu/app/backend
       become_user: ubuntu

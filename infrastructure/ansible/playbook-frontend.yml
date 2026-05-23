@@ -7,7 +7,12 @@
     vite_api_url: ""
 
   tasks:
-    - name: Ensure Node.js, Git, and Nginx dependencies are installed
+    - name: Set up NodeSource repository for Node.js 20
+      shell: curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+      args:
+        executable: /bin/bash
+
+    - name: Ensure Node.js, Git, and Nginx are installed
       apt:
         name:
           - nodejs
@@ -41,13 +46,13 @@
         - /home/ubuntu/app/frontend/node_modules
 
     - name: Install frontend application dependencies
-      command: npm install
+      command: /usr/bin/npm install
       args:
         chdir: /home/ubuntu/app/frontend
       become_user: ubuntu
 
     - name: Build frontend React/Vite application
-      command: npm run build
+      command: /usr/bin/npm run build
       args:
         chdir: /home/ubuntu/app/frontend
       become_user: ubuntu
