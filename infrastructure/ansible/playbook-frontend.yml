@@ -1,0 +1,103 @@
+---
+- name: Configure and deploy the frontend
+  hosts: localhost
+  connection: local
+  become: yes
+  vars:
+    vite_api_url: ""
+
+  tasks:
+    - name: Ensure Node.js, Git, and Nginx dependencies are installed
+      apt:
+        name:
+          - nodejs
+          - git
+          - nginx
+        state: present
+        update_cache: yes
+
+    - name: Ensure the application directory has the correct ownership
+      file:
+        path: /home/ubuntu/app
+        owner: ubuntu
+        group: ubuntu
+        recurse: yes
+
+    - name: Configure Vite environment variables
+      copy:
+        dest: /home/ubuntu/app/frontend/.env
+        content: |
+          VITE_API_URL={{ vite_api_url }}
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+    - name: Remove Windows lockfiles and node_modules to fix Linux Rollup bug
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /home/ubuntu/app/frontend/package-lock.json
+        - /home/ubuntu/app/frontend/node_modules
+
+    - name: Install frontend application dependencies
+      command: npm install
+      args:
+        chdir: /home/ubuntu/app/frontend
+      become_user: ubuntu
+
+    - name: Build frontend React/Vite application
+      command: npm run build
+      args:
+        chdir: /home/ubuntu/app/frontend
+      become_user: ubuntu
+
+    - name: Create Nginx webroot deployment directory
+      file:
+        path: /var/www/html/vite-app
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Deploy compiled assets to Nginx webroot
+      copy:
+        src: /home/ubuntu/app/frontend/dist/
+        dest: /var/www/html/vite-app/
+        owner: www-data
+        group: www-data
+        remote_src: yes
+
+    - name: Ensure correct permissions under webroot
+      file:
+        path: /var/www/html/vite-app
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: u=rwX,g=rX,o=rX
+        recurse: yes
+
+    - name: Configure Nginx virtual host configuration
+      template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/sites-available/vite-app
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Remove default Nginx host configuration
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Enable Stackr Nginx host configuration
+      file:
+        src: /etc/nginx/sites-available/vite-app
+        dest: /etc/nginx/sites-enabled/vite-app
+        state: link
+
+    - name: Restart Nginx service
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: yes

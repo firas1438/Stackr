@@ -65,53 +65,15 @@ resource "aws_launch_template" "backend_lt" {
 
               # Install dependencies
               apt update -y
-              curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-              apt install -y nodejs git
+              apt install -y ansible git
 
               # Clone repository
               cd /home/ubuntu
               git clone ${var.github_repo} app
-              cd app/backend
 
-              # Configure environment variables
-              echo "PORT=3000" >> .env
-              echo "DATABASE_URL=postgresql://${var.db_username}:${var.db_password}@${var.db_address}:5432/${var.db_name}" >> .env
-              echo "CORS_ORIGIN=*" >> .env
-              echo "GEMINI_API_KEY=${var.gemini_api_key}" >> .env
-
-              # Install, migrate and build
-              npm install
-              npx prisma migrate deploy
-              npm run prisma:generate
-              npx prisma db seed
-              npm run build
-
-              # Fix permissions
-              chown -R ubuntu:ubuntu /home/ubuntu/app
-
-              # Configure systemd service
-              cat <<EOS > /etc/systemd/system/backend.service
-              [Unit]
-              Description=Stackr NestJS Backend
-              After=network.target
-
-              [Service]
-              Type=simple
-              User=ubuntu
-              WorkingDirectory=/home/ubuntu/app/backend
-              ExecStart=/usr/bin/node dist/src/main.js
-              Restart=always
-              RestartSec=5
-              Environment=NODE_ENV=production
-
-              [Install]
-              WantedBy=multi-user.target
-              EOS
-
-              # Enable and start service
-              systemctl daemon-reload
-              systemctl enable backend
-              systemctl start backend
+              # Run Ansible playbook locally
+              cd app/infrastructure/ansible
+              ansible-playbook -i "localhost," -c local playbook-backend.yml --extra-vars "db_username=${var.db_username} db_password=${var.db_password} db_address=${var.db_address} db_name=${var.db_name} gemini_api_key=${var.gemini_api_key}"
               EOF
   )
 
@@ -174,43 +136,15 @@ resource "aws_instance" "frontend" {
 
               # Install dependencies
               apt update -y
-              curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-              apt install -y nodejs git nginx
+              apt install -y ansible git
 
-              # Clone and configure
+              # Clone repository
               cd /home/ubuntu
               git clone ${var.github_repo} app
-              cd app/frontend
-              echo "VITE_API_URL=http://${aws_lb.backend_alb.dns_name}/api/v1" >> .env
 
-              # Build app
-              rm -f package-lock.json
-              rm -rf node_modules
-              npm install
-              npm run build
-
-              # Deploy
-              sudo mkdir -p /var/www/html/vite-app
-              sudo cp -r dist/* /var/www/html/vite-app/
-              sudo chown -R www-data:www-data /var/www/html/vite-app
-              sudo chmod -R 755 /var/www/html/vite-app
-
-              # Configure Nginx
-              rm -f /etc/nginx/sites-enabled/default
-              cat <<EON > /etc/nginx/sites-available/vite-app
-              server {
-                  listen 80;
-                  server_name _;
-                  root /var/www/html/vite-app;
-                  index index.html;
-                  
-                  location / {
-                      try_files \$uri \$uri/ /index.html;
-                  }
-              }
-              EON
-              ln -sf /etc/nginx/sites-available/vite-app /etc/nginx/sites-enabled/
-              systemctl restart nginx
+              # Run Ansible playbook locally
+              cd app/infrastructure/ansible
+              ansible-playbook -i "localhost," -c local playbook-frontend.yml --extra-vars "vite_api_url=http://${aws_lb.backend_alb.dns_name}/api/v1"
               EOF
 
   tags = {

@@ -35,7 +35,6 @@ This directory contains the Terraform configuration to deploy the Stackr applica
 - **Auto Scaling Group (ASG)**: Uses the Launch Template to spin up backend servers inside the private subnets. If CPU utilization goes over 70%, it automatically creates more servers (scaling out) and registers them to the Target Group.
 - **Frontend EC2 Instance**: A standalone server in the public subnet. Its `user_data` script dynamically grabs the new ALB's DNS name, injects it into Vite as `VITE_API_URL`, builds the frontend, and serves it using Nginx with SPA routing.
 
----
 
 ## Setup & Deployment
 

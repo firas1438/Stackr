@@ -1,0 +1,78 @@
+---
+- name: Configure and deploy the backend
+  hosts: localhost
+  connection: local
+  become: yes
+  vars:
+    db_username: ""
+    db_password: ""
+    db_address: ""
+    db_name: ""
+    gemini_api_key: ""
+
+  tasks:
+    - name: Ensure Node.js and Git dependencies are installed
+      apt:
+        name:
+          - nodejs
+          - git
+        state: present
+        update_cache: yes
+
+    - name: Ensure the application directory has the correct ownership
+      file:
+        path: /home/ubuntu/app
+        owner: ubuntu
+        group: ubuntu
+        recurse: yes
+
+    - name: Configure NestJS environment variables
+      copy:
+        dest: /home/ubuntu/app/backend/.env
+        content: |
+          PORT=3000
+          DATABASE_URL=postgresql://{{ db_username }}:{{ db_password }}@{{ db_address }}:5432/{{ db_name }}
+          CORS_ORIGIN=*
+          GEMINI_API_KEY={{ gemini_api_key }}
+        owner: ubuntu
+        group: ubuntu
+        mode: '0600'
+
+    - name: Install backend application dependencies
+      command: npm install
+      args:
+        chdir: /home/ubuntu/app/backend
+      become_user: ubuntu
+
+    - name: Run Prisma migrations
+      command: npx prisma migrate deploy
+      args:
+        chdir: /home/ubuntu/app/backend
+      become_user: ubuntu
+
+    - name: Generate Prisma client
+      command: npm run prisma:generate
+      args:
+        chdir: /home/ubuntu/app/backend
+      become_user: ubuntu
+
+    - name: Build NestJS application
+      command: npm run build
+      args:
+        chdir: /home/ubuntu/app/backend
+      become_user: ubuntu
+
+    - name: Configure systemd service for backend
+      template:
+        src: templates/backend.service.j2
+        dest: /etc/systemd/system/backend.service
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Enable and restart backend service
+      systemd:
+        name: backend
+        state: restarted
+        enabled: yes
+        daemon_reload: yes
