@@ -19,7 +19,11 @@ An AI-powered tool that helps developers understand how their tech stack fits to
 | Database | PostgreSQL |
 | Containerization | Docker, Docker Compose |
 | AI | Google Gemini via `@google/genai` |
-| Infrastructure | AWS (EC2, RDS, ALB, ASG) via Terraform |
+| IaC | Terraform |
+| Configuration Management | Ansible |
+| Cloud Provider | AWS (EC2, RDS, ALB, ASG) |
+
+> **Note:** AWS infrastructure was deployed using an **AWS Academy Sandbox Environment**.
 
 
 ## Getting Started
@@ -35,12 +39,16 @@ docker compose up -d
 This starts the frontend, backend, and PostgreSQL database as three services. Visit http://localhost:5173.
 
 
-### - AWS Deployment (Terraform)
+### - AWS Deployment (Terraform + Ansible)
 
-Infrastructure is defined in the `infrastructure/` folder using Terraform.
+Infrastructure is provisioned by Terraform and server configuration is handled automatically by Ansible on boot.
+
+All infrastructure code lives under `infrastructure/`:
+- `infrastructure/terraform/` - AWS resource provisioning (VPC, EC2, RDS, ALB, ASG).
+- `infrastructure/ansible/` - Server configuration playbooks (Node.js, Nginx, systemd, app build).
 
 ```bash
-cd infrastructure
+cd infrastructure/terraform
 
 terraform init
 terraform plan
@@ -52,7 +60,9 @@ To destroy the infra:
 terraform destroy
 ```
 
-> Make sure `infrastructure/terraform.tfvars` is filled in using `terraform.tfvars.example` as a reference before running.
+> Make sure `infrastructure/terraform/terraform.tfvars` is filled in using `terraform.tfvars.example` as a reference before running.
+
+Once Terraform provisions the EC2 instances, each instance automatically clones the repository and runs its Ansible playbook locally on boot - no manual configuration needed.
 
 ## API routes
 
