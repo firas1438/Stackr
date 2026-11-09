@@ -59,23 +59,14 @@ resource "aws_launch_template" "backend_lt" {
 
   vpc_security_group_ids = [var.backend_sg_id]
 
-  user_data = base64encode(<<-EOF
-              #!/bin/bash
-              set -e
-
-              # Install dependencies
-              apt update -y
-              apt install -y ansible git
-
-              # Clone repository
-              cd /home/ubuntu
-              git clone ${var.github_repo} app
-
-              # Run Ansible playbook locally
-              cd app/infrastructure/ansible
-              ansible-playbook -i "localhost," -c local playbook-backend.yml --extra-vars "db_username=${var.db_username} db_password=${var.db_password} db_address=${var.db_address} db_name=${var.db_name} gemini_api_key=${var.gemini_api_key}"
-              EOF
-  )
+  user_data = base64encode(templatefile("${path.module}/backend-user-data.sh", {
+    github_repo    = var.github_repo
+    db_username    = var.db_username
+    db_password    = var.db_password
+    db_address     = var.db_address
+    db_name        = var.db_name
+    gemini_api_key = var.gemini_api_key
+  }))
 
   tag_specifications {
     resource_type = "instance"
@@ -130,22 +121,10 @@ resource "aws_instance" "frontend" {
   associate_public_ip_address = true
   user_data_replace_on_change = true
 
-  user_data = <<-EOF
-              #!/bin/bash
-              set -e
-
-              # Install dependencies
-              apt update -y
-              apt install -y ansible git
-
-              # Clone repository
-              cd /home/ubuntu
-              git clone ${var.github_repo} app
-
-              # Run Ansible playbook locally
-              cd app/infrastructure/ansible
-              ansible-playbook -i "localhost," -c local playbook-frontend.yml --extra-vars "vite_api_url=http://${aws_lb.backend_alb.dns_name}/api/v1"
-              EOF
+  user_data = templatefile("${path.module}/frontend-user-data.sh", {
+    github_repo = var.github_repo
+    api_url     = "http://${aws_lb.backend_alb.dns_name}/api/v1"
+  })
 
   tags = {
     Name = "${var.project_name}-frontend"
